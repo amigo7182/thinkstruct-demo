@@ -1,4 +1,5 @@
 """Tests for loading and cleaning the patent data."""
+
 from datetime import date
 from pathlib import Path
 
@@ -38,6 +39,7 @@ def test_path_to_week():
         ("the 1st and 2nd wheels", "the 1st and 2nd wheels"),  # ordinals untouched
         ("a 2.5 mm gap", "a 2.5 mm gap"),  # decimals untouched
         ("1,000 rpm", "1,000 rpm"),  # thousands untouched
+        ("disclosure.FIG. 2", "disclosure. FIG. 2"),
     ],
 )
 def test_fix_spacing(raw, expected):
@@ -63,7 +65,9 @@ def test_clean_claims_handles_canceled_numbered_and_unnumbered():
 
 
 def test_clean_claims_does_not_read_decimals_as_claim_numbers():
-    claims = clean_claims(["1 . A rubber composition", "0.5 phr to 6.0 phr of accelerator"], "TEST")
+    claims = clean_claims(
+        ["1 . A rubber composition", "0.5 phr to 6.0 phr of accelerator"], "TEST"
+    )
     assert [c.number for c in claims] == [1, 2]
     assert claims[1].text.startswith("0.5 phr")
 

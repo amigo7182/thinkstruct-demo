@@ -1,5 +1,6 @@
 from datetime import date
 from dataclasses import dataclass
+from typing import Literal
 
 UNCLASSIFIED = "Unclassified"
 UNTITLED = "Untitled"
@@ -36,3 +37,14 @@ class Patent:
 
     claims: list[Claim]
     week: date
+
+
+PassageKind = Literal["abstract", "claim", "paragraph"]
+
+
+@dataclass
+class Passage:
+    doc_number: int
+    kind: PassageKind
+    number: int
+    text: str

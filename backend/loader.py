@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from models import Patent, UNCLASSIFIED, UNTITLED, Paragraph, Claim
 
 DATA_DIR = Path(__file__).parent / "data" / "patent_data_small"
-_WORD_FIG = re.compile(r"(?<=[a-z])(?=FIGS?\b)")  # to|FIGS
+_WORD_FIG = re.compile(r"(?<=[a-z.])(?=FIGS?\b)")  # to|FIGS
 _FIG_NUMBER = re.compile(r"(?:(?<=\bFIG\.)|(?<=\bFIGS\.))(?=\d)")  # FIGS.|2
 _LETTER_DIGIT = re.compile(r"(?<=[A-Za-z])(?=\d)")  # element|120
 _DIGIT_LETTER = re.compile(
@@ -122,31 +122,3 @@ def load_patents() -> list[Patent]:
         if patent is not None:
             patents.append(patent)
     return patents
-
-
-if __name__ == "__main__":
-    print(path_to_week(Path("patents_ipa240215.json")))
-    week_record_set = set()
-    total_records = 0
-    total_paragraphs = 0
-    total_claims = 0
-    for record, week in read_records():
-        total_records += 1
-        week_record_set.add(week)
-    print(f"Total records:{total_records}")
-    print(f"Number of weeks: {len(week_record_set)}")
-    patents = load_patents()
-    print(len(patents))
-    print(f"The title of the first patent is {patents[0].title}")
-    print(f"Subclass of the first patent is {patents[0].subclass}")
-    for patent in patents:
-        for paragraph in patent.paragraphs:
-            total_paragraphs += 1
-        for claim in patent.claims:
-            total_claims += 1
-    print(f"Total paragraphs: {total_paragraphs}")
-    for paragraph in patents[0].paragraphs:
-        print(paragraph.number)
-    print(total_claims)
-    for claim in patents[0].claims:
-        print(f"{claim.number}. {claim.text}")
