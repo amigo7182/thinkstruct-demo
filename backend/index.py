@@ -6,6 +6,7 @@
 """
 import hashlib
 import json
+import os
 import re
 import time
 from collections import defaultdict
@@ -189,16 +190,24 @@ def best_per_patent(scores: np.ndarray, offsets: np.ndarray) -> np.ndarray:
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 BATCH_SIZE = 64
+# Queries are embedded on the CPU. On Apple GPUs (MPS), every new input length triggers
+# a slow one-time compilation (~0.5-1 s), and every query has a different length. One short
+# query is cheap on the CPU, so it's faster overall. Bulk passage embedding still uses the GPU.
+# Set QUERY_DEVICE=mps (or cuda) to change this.
+QUERY_DEVICE = os.environ.get("QUERY_DEVICE", "cpu")
 CACHE_DIR = Path(__file__).parent / "cache"
 EMBEDDINGS_PATH = CACHE_DIR / "embeddings.npy"
 INFO_PATH = CACHE_DIR / "embeddings.json"
 
 
-def load_model():
-    """Load the embedding model (imported here so tests can use a fake model without PyTorch)."""
+def load_model(device: str | None = None):
+    """Load the embedding model; device None picks the GPU when there is one.
+
+    Imported here so tests can use a fake model without loading PyTorch.
+    """
     from sentence_transformers import SentenceTransformer
 
-    return SentenceTransformer(MODEL_NAME)
+    return SentenceTransformer(MODEL_NAME, device=device)
 
 
 def fingerprint(passages: list[Passage]) -> str:
@@ -213,9 +222,14 @@ class VectorIndex:
     """Row i of `embeddings` is the embedding of `passages[i]`."""
 
     def __init__(self, passages: list[Passage], model=None, embeddings: np.ndarray | None = None):
-        """Pass `embeddings` to skip the disk cache (used by tests and the scale benchmark)."""
+        """`model` (e.g. a fake one in tests) is used for everything when given.
+
+        Otherwise queries use a CPU model, and a GPU model is loaded only if the cached
+        embeddings are missing or stale. Pass `embeddings` to skip the disk cache.
+        """
         self.passages = passages
-        self.model = model if model is not None else load_model()
+        self._bulk_model = model
+        self.query_model = model if model is not None else load_model(QUERY_DEVICE)
         if embeddings is not None and len(embeddings) != len(passages):
             raise ValueError("embeddings must have one row per passage")
         self.embeddings = embeddings if embeddings is not None else self._load_or_build()
@@ -232,8 +246,9 @@ class VectorIndex:
 
     def _build(self, expected_fingerprint: str) -> np.ndarray:
         texts = [p.text for p in self.passages]
+        model = self._bulk_model if self._bulk_model is not None else load_model()
         start = time.perf_counter()
-        embeddings = self.model.encode(
+        embeddings = model.encode(
             texts,
             batch_size=BATCH_SIZE,
             normalize_embeddings=True,  # unit length, so a dot product is the cosine similarity
@@ -245,7 +260,7 @@ class VectorIndex:
         info = {
             "fingerprint": expected_fingerprint,
             "model": MODEL_NAME,
-            "device": str(getattr(self.model, "device", "unknown")),
+            "device": str(getattr(model, "device", "unknown")),
             "count": len(texts),
             "dimensions": int(embeddings.shape[1]),
             "seconds": round(seconds, 2),
@@ -259,7 +274,7 @@ class VectorIndex:
         return embeddings
 
     def embed_query(self, text: str) -> np.ndarray:
-        return self.model.encode(text, normalize_embeddings=True, convert_to_numpy=True).astype(np.float32)
+        return self.query_model.encode(text, normalize_embeddings=True, convert_to_numpy=True).astype(np.float32)
 
     def score_rows(self, query_vector: np.ndarray, rows: np.ndarray | None = None) -> np.ndarray:
         """Cosine similarity of the query with the given rows (all rows if None)."""

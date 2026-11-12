@@ -50,7 +50,7 @@ def scaled_engine(patents, passages, vectors: VectorIndex, factor: int) -> Searc
     copies = range(factor)
     big_patents = [replace(p, doc_number=f"{p.doc_number}-{i}") for i in copies for p in patents]
     big_passages = [replace(p, doc_number=f"{p.doc_number}-{i}") for i in copies for p in passages]
-    big_vectors = VectorIndex(big_passages, model=vectors.model, embeddings=np.tile(vectors.embeddings, (factor, 1)))
+    big_vectors = VectorIndex(big_passages, model=vectors.query_model, embeddings=np.tile(vectors.embeddings, (factor, 1)))
     return SearchEngine(big_patents, big_passages, vectors=big_vectors)
 
 
