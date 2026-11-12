@@ -4,7 +4,7 @@ Semantic search over vehicle patent applications, with hybrid filters (Part 1), 
 10 million patents plus a working ingestion-queue proof of concept (Part 2), and an
 "Interface at Scale" frontend with three linked views (Part 3).
 
-**Video walkthrough of Parts 2 and 3:** _add the link here_
+**Video walkthrough of Parts 2 and 3:** _[](https://youtu.be/yIL8nOI5PKE)_
 
 | Part | Folder | What it is |
 |---|---|---|
@@ -204,7 +204,7 @@ cd frontend && npm install && npm run dev
 ```
 
 - **Production build:** `npm run build && npm run preview` serves it on the same port.
-- **Checks:** `npm test` (40 tests: Vitest + Testing Library), `npm run typecheck`
+- **Checks:** `npm test` (41 tests: Vitest + Testing Library), `npm run typecheck`
   (`tsc --noEmit`) and `npm run build`.
 - **API address:** the interface calls `VITE_API_URL` (default `http://127.0.0.1:8000`; see
   `frontend/.env.example`).
@@ -226,6 +226,8 @@ cd frontend && npm install && npm run dev
 - **States:**
   - **Landing:** sharks animating behind the search box.
   - **No results:** "No patents in this part of the sea." with the chips that caused it.
+    If a week filter caused it, the timeline stays, so a range can still start at an
+    empty week.
   - **Saved searches:** saved in browser storage (the bonus).
 - **Light and dark mode,** responsive down to phones, keyboard accessible, and every text
   colour passes WCAG AA.

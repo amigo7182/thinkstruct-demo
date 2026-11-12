@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { SearchResponse } from "../api/types";
 import { formatMs, resultSummary } from "../lib/format";
 import type { Theme } from "../lib/hooks";
@@ -73,8 +73,18 @@ export function Workspace({ theme }: { theme: Theme }) {
     [store],
   );
   const onFilterWeek = useCallback((week: string) => store.setFilters({ weekFrom: week, weekTo: week }), [store]);
+  const weekAnchor = useRef<string | null>(null); // start of a shift-click range, kept across states
 
   const noResults = response !== null && response.total === 0;
+  const timeline = response && (
+    <Timeline
+      weeks={response.facets.weeks}
+      from={response.filters.week_from}
+      to={response.filters.week_to}
+      onSelect={onSelectWeeks}
+      anchor={weekAnchor}
+    />
+  );
 
   return (
     <main className="workspace">
@@ -122,7 +132,10 @@ export function Workspace({ theme }: { theme: Theme }) {
           pending={pending}
           onRemove={store.removeFilter}
           onClear={store.clearFilters}
-        />
+        >
+          {/* A week (or range) with no patents: keep the timeline so the range can be widened. */}
+          {(response.filters.week_from || response.filters.week_to) && timeline}
+        </NoResults>
       ) : (
         <div className="views" data-pending={pending} aria-busy={pending}>
           <ClassificationView
@@ -131,12 +144,7 @@ export function Workspace({ theme }: { theme: Theme }) {
             onSelect={onFilterClass}
           />
           <div className="views-main">
-            <Timeline
-              weeks={response.facets.weeks}
-              from={response.filters.week_from}
-              to={response.filters.week_to}
-              onSelect={onSelectWeeks}
-            />
+            {timeline}
             <ResultsList
               results={response.results}
               total={response.total}

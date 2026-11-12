@@ -1,0 +1,9 @@
+{
+  "fingerprint": "9e3fd6ea05cb86afe05396c17c4684657e3914dfc6a6624590141793170751f8",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "device": "mps:0",
+  "count": 36125,
+  "dimensions": 384,
+  "seconds": 70.92,
+  "passages_per_second": 509.3
+}

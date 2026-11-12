@@ -66,6 +66,28 @@ describe("linked views", () => {
     expect(screen.getByRole("button", { name: "Remove filter: 7–28 Mar 2024" })).toBeInTheDocument();
   });
 
+  it("a range can start at a week with no patents", async () => {
+    const user = userEvent.setup();
+    const { calls } = setup("/?q=spoke");
+    await calls[0].respond(INITIAL);
+
+    // Early March has no matches, so filtering to it alone gives no results...
+    await user.click(weekButton(WEEKS[3], 1));
+    await calls[1].respond({
+      ...INITIAL,
+      total: 0,
+      results: [],
+      filters: { ...NO_FILTERS, week_from: WEEKS[3], week_to: WEEKS[3] },
+      facets: { classification: [], weeks: weeks() },
+    });
+    expect(screen.getByText("No patents in this part of the sea.")).toBeInTheDocument();
+
+    // ...but the timeline stays, and shift-clicking December selects the range from March.
+    fireEvent.click(weekButton(WEEKS[42], 0), { shiftKey: true });
+    expect(calls).toHaveLength(3);
+    expect(filterParams(calls[2])).toEqual({ q: "spoke", week_from: WEEKS[3], week_to: WEEKS[42] });
+  });
+
   it("the results list filters the other views too", async () => {
     const user = userEvent.setup();
     const { calls } = setup("/?q=spoke");
