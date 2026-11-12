@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { Theme } from "../lib/hooks";
 import type { FilterKey, Filters } from "../state/search";
 import { FilterChips } from "./FilterChips";
@@ -9,9 +10,11 @@ interface Props {
   pending: boolean;
   onRemove: (key: FilterKey) => void;
   onClear: () => void;
+  /** Extra controls to widen the results from here (the timeline, when weeks caused it). */
+  children?: ReactNode;
 }
 
-export function NoResults({ theme, filters, pending, onRemove, onClear }: Props) {
+export function NoResults({ theme, filters, pending, onRemove, onClear, children }: Props) {
   return (
     <section className="no-results" data-pending={pending} aria-busy={pending}>
       <Sharks theme={theme} />
@@ -19,6 +22,7 @@ export function NoResults({ theme, filters, pending, onRemove, onClear }: Props)
         <h2 className="no-results-title">No patents in this part of the sea.</h2>
         <FilterChips filters={filters} onRemove={onRemove} onClear={onClear} />
         <p className="muted">Remove a filter to widen the results.</p>
+        {children && <div className="no-results-timeline">{children}</div>}
       </div>
     </section>
   );

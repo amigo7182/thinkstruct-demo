@@ -81,5 +81,7 @@ describe("queries", () => {
     expect(screen.getByText("No patents in this part of the sea.")).toBeInTheDocument();
     expect(screen.getByText("Remove a filter to widen the results.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Remove filter: Class B60D" })).toBeInTheDocument();
+    // No week filter caused it, so there's no timeline to widen.
+    expect(screen.queryByRole("region", { name: "Published by week" })).not.toBeInTheDocument();
   });
 });

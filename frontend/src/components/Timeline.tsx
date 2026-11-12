@@ -8,6 +8,9 @@ interface Props {
   from: string | null; // the week filter that response answers
   to: string | null;
   onSelect: (from: string | undefined, to: string | undefined) => void;
+  /** Where a shift-click range starts: the last week clicked. Owned by the parent so it
+   *  survives the timeline moving into the no-results state and back. */
+  anchor: { current: string | null };
 }
 
 /**
@@ -15,8 +18,7 @@ interface Props {
  * (or Shift+Enter) to select the range from the last clicked week. Arrow keys move between
  * weeks, so the 64 columns are a single tab stop.
  */
-export const Timeline = memo(function Timeline({ weeks, from, to, onSelect }: Props) {
-  const anchor = useRef<string | null>(null);
+export const Timeline = memo(function Timeline({ weeks, from, to, onSelect, anchor }: Props) {
   const buttons = useRef<(HTMLButtonElement | null)[]>([]);
   const [focusIndex, setFocusIndex] = useState<number | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);

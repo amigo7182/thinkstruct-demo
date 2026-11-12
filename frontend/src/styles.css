@@ -889,10 +889,17 @@ kbd {
   gap: 16px;
 }
 
-.no-results-content p {
+.no-results-content > p {
   margin: 0;
   padding: 2px 6px;
   background: var(--paper);
+}
+
+/* When weeks caused the empty result, the timeline stays so the range can be widened. */
+.no-results-timeline {
+  width: min(880px, calc(100vw - 64px));
+  margin-top: 8px;
+  text-align: left;
 }
 
 .no-results-title {
