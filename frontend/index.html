@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Search 640 vehicle-wheel patents by describing the invention." />
+    <meta name="color-scheme" content="light dark" />
+    <title>Patent search</title>
+    <script>
+      // Apply a remembered light/dark choice before the first paint, so the page doesn't flash.
+      try {
+        var theme = localStorage.getItem("patent-search.theme");
+        if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

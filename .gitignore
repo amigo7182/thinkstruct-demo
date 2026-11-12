@@ -25,6 +25,9 @@ frontend/dist/
 # Part 2 proof of concept: local database files
 scale-poc/pgdata/
 
+# The assessment brief itself (not ours to publish)
+thinkstruct-coding-task.pdf
+
 # Screen recordings (host the video elsewhere and link it)
 *.mov
 *.mp4
