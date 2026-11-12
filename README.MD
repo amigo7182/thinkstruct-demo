@@ -4,7 +4,7 @@ Semantic search over vehicle patent applications, with hybrid filters (Part 1), 
 10 million patents plus a working ingestion-queue proof of concept (Part 2), and an
 "Interface at Scale" frontend with three linked views (Part 3).
 
-**Video walkthrough of Parts 2 and 3:** _[](https://youtu.be/yIL8nOI5PKE)_
+**Video walkthrough of Parts 2 and 3:** https://youtu.be/yIL8nOI5PKE
 
 | Part | Folder | What it is |
 |---|---|---|
