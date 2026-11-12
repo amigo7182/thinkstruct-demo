@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Embedding cache (regenerated on first run)
+backend/cache/
+*.npy
+
+# Large dataset, if you request it later
+backend/data/patent_data_large/
+
+# Node / Vite frontend
+node_modules/
+frontend/dist/
+*.tsbuildinfo
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Part 2 proof of concept: local database files
+scale-poc/pgdata/
+
+# The assessment brief itself (not ours to publish)
+thinkstruct-coding-task.pdf
+
+# Screen recordings (host the video elsewhere and link it)
+*.mov
+*.mp4
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS and editor files
+.DS_Store
+.vscode/
+.idea/
